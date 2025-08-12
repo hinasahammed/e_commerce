@@ -1,0 +1,103 @@
+import 'dart:ui';
+import 'package:e_commerce/view/categories/categories_view.dart';
+import 'package:e_commerce/view/customNavigation/bar_item.dart';
+import 'package:e_commerce/view/home/home_view.dart';
+import 'package:e_commerce/view/profile/profile_view.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+class CustomNavigationView extends StatefulWidget {
+  const CustomNavigationView({super.key});
+
+  @override
+  State<CustomNavigationView> createState() => _CustomNavigationViewState();
+}
+
+class _CustomNavigationViewState extends State<CustomNavigationView> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      extendBody: true,
+      body: IndexedStack(
+        index: _currentIndex,
+        children: const [HomeView(), CategoriesView(), ProfileView()],
+      ),
+      bottomNavigationBar: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          margin: const EdgeInsets.all(16),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 10,
+                sigmaY: 10,
+              ), // Increase blur intensity
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: colorScheme.surface.withValues(alpha: .8),
+                  border: Border.all(
+                    color: colorScheme.outline.withValues(alpha: .2),
+                    width: 1,
+                  ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      colorScheme.primaryContainer.withValues(alpha: .7),
+                      colorScheme.primaryContainer.withValues(alpha: .3),
+                    ],
+                  ),
+                ),
+                child: Row(
+                  spacing: 16,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BarItem(
+                      onTap: () {
+                        setState(() {
+                          _currentIndex = 0;
+                        });
+                      },
+                      icon: FontAwesomeIcons.home,
+                      isCurrent: _currentIndex == 0,
+                    ),
+                    BarItem(
+                      onTap: () {
+                        setState(() {
+                          _currentIndex = 1;
+                        });
+                      },
+                      icon: FontAwesomeIcons.thLarge,
+                      isCurrent: _currentIndex == 1,
+                    ),
+                    BarItem(
+                      onTap: () {
+                        setState(() {
+                          _currentIndex = 2;
+                        });
+                      },
+                      icon: FontAwesomeIcons.userAlt,
+                      isCurrent: _currentIndex == 2,
+                    ),
+                    BarItem(
+                      onTap: () {},
+                      icon: FontAwesomeIcons.shoppingCart,
+                      isCurrent: _currentIndex == 3,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -3,28 +3,33 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
+    scaffoldBackgroundColor: AppColors.lightScaffoldBackground,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.lightPrimaryColor,
       primary: AppColors.lightPrimaryColor,
       secondary: AppColors.secondaryColor,
       tertiary: AppColors.tertiaryColor,
-      surface: AppColors.lightBackgroundColor,
       brightness: Brightness.light,
     ),
-    textTheme: TextTheme(titleLarge: TextStyle(color: AppColors.textColor)),
-    cardTheme: CardThemeData(color: AppColors.cardColor),
+    textTheme: const TextTheme(
+      titleLarge: TextStyle(color: AppColors.textColor),
+    ),
+    cardTheme: const CardThemeData(color: AppColors.cardColor),
   );
 
   static ThemeData darkTheme = ThemeData(
+    scaffoldBackgroundColor: AppColors.darkScaffoldBackground,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.darkPrimaryColor,
-      primary: AppColors.darkPrimaryColor,
+      // primary: AppColors.darkPrimaryColor,
+      // onPrimary: AppColors.darkTextColor,
       secondary: AppColors.darkSecondaryColor,
       tertiary: AppColors.darkTertiaryColor,
-      surface: AppColors.darkBackgroundColor,
       brightness: Brightness.dark,
     ),
-    textTheme: TextTheme(titleLarge: TextStyle(color: AppColors.darkTextColor)),
-    cardTheme: CardThemeData(color: AppColors.darkCardColor),
+    // textTheme: const TextTheme(
+    //   titleLarge: TextStyle(color: AppColors.darkTextColor),
+    // ),
+    // cardTheme: const CardThemeData(color: AppColors.darkCardColor),
   );
 }
