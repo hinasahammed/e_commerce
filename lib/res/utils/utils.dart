@@ -1,3 +1,4 @@
+import 'package:e_commerce/res/components/enums/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -43,6 +44,28 @@ class Utils {
         return Colors.red;
       default:
         return Colors.grey;
+    }
+  }
+
+   static IconData getThemeIcon(AppThemeMode theme) {
+    switch (theme) {
+      case AppThemeMode.light:
+        return Icons.light_mode;
+      case AppThemeMode.dark:
+        return Icons.dark_mode;
+      case AppThemeMode.system:
+        return Icons.brightness_auto;
+    }
+  }
+
+  static String getThemeDisplayName(AppThemeMode theme) {
+    switch (theme) {
+      case AppThemeMode.light:
+        return 'Light';
+      case AppThemeMode.dark:
+        return 'Dark';
+      case AppThemeMode.system:
+        return 'System';
     }
   }
 }

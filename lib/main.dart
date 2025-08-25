@@ -1,15 +1,19 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:e_commerce/res/components/constants/theme/app_theme.dart';
+import 'package:e_commerce/res/components/enums/enums.dart';
 import 'package:e_commerce/res/components/router/app_router.dart';
-import 'package:flutter/foundation.dart';
+import 'package:e_commerce/viewmodel/provider/providers.dart';
+import 'package:e_commerce/viewmodel/theme/theme_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final pref = await SharedPreferences.getInstance();
   runApp(
-    DevicePreview(
-      enabled: !kReleaseMode,
-      builder: (context) => const ProviderScope(child: MyApp()),
+    ProviderScope(
+      overrides: [sharedPreferencesProvider.overrideWithValue(pref)],
+      child: const MyApp(),
     ),
   );
 }
@@ -19,13 +23,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Fresh Cart',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
-      routerConfig: AppRouter.router,
+    return Consumer(
+      builder: (context, ref, child) {
+        final currentTheme = ref.watch(
+          themeViewmodelProvider.select((value) => value.currentTheme),
+        );
+        return MaterialApp.router(
+          title: 'Fresh Cart',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: switch (currentTheme) {
+            AppThemeMode.light => ThemeMode.light,
+            AppThemeMode.dark => ThemeMode.dark,
+            AppThemeMode.system => ThemeMode.system,
+          },
+          routerConfig: AppRouter.router,
+        );
+      },
     );
   }
 }

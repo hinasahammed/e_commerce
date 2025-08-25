@@ -1,5 +1,6 @@
 import 'package:e_commerce/res/components/constants/colors/app_colors.dart';
 import 'package:e_commerce/res/components/text/label_large_text.dart';
+import 'package:e_commerce/view/myAdresses/widget/theme_sheet.dart';
 import 'package:e_commerce/view/profile/widgets/row_item.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -34,7 +35,13 @@ class Preferences extends StatelessWidget {
             ),
           ),
           Divider(color: colorScheme.onSurface.withValues(alpha: .1)),
-          const RowItem(
+          RowItem(
+            onTap: () async {
+              await showModalBottomSheet(
+                context: context,
+                builder: (context) => const ThemeSheet(),
+              );
+            },
             color: AppColors.yellowColor,
             icon: FontAwesomeIcons.palette,
             title: "Theme",

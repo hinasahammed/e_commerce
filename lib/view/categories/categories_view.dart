@@ -1,156 +1,115 @@
-import 'package:e_commerce/data/response/status.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:e_commerce/model/subCategoryParameter/sub_catgeory_parameter.dart';
 import 'package:e_commerce/res/components/constants/data/categories.dart';
+import 'package:e_commerce/res/components/constants/data/sub_categories.dart';
 import 'package:e_commerce/res/components/text/label_large_text.dart';
-import 'package:e_commerce/res/components/text/label_small_text.dart';
-import 'package:e_commerce/res/components/widget/product_card.dart';
-import 'package:e_commerce/res/utils/utils.dart';
-import 'package:e_commerce/viewmodel/categories/categories_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
-class CategoriesView extends ConsumerWidget {
+class CategoriesView extends ConsumerStatefulWidget {
   const CategoriesView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final viewmodel = ref.read(categoriesViewmodelProvider.notifier);
-    final size = MediaQuery.sizeOf(context);
+  ConsumerState<CategoriesView> createState() => _CategoriesViewState();
+}
 
+class _CategoriesViewState extends ConsumerState<CategoriesView> {
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppBar(title: const Text("Categories")),
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
-            child: Row(
-              spacing: 5,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: size.width * 0.2,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: ListView.separated(
-                      itemCount: groceryCategories.length,
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      separatorBuilder: (context, index) => Divider(
-                        color: colorScheme.onPrimary.withValues(alpha: 0.8),
-                        thickness: 1,
-                        height: 1,
-                      ),
-                      itemBuilder: (context, index) {
-                        final data = groceryCategories[index];
-                        return InkWell(
-                          onTap: () {
-                            viewmodel.fetchSubcategories(data.code);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: LabelSmallText(
-                              text: data.title,
-                              fontWeight: FontWeight.w500,
-                              textAlign: TextAlign.center,
-                              textColor: colorScheme.onPrimaryContainer,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+          child: ListView.separated(
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 20,
+              bottom: 100,
+            ),
+            itemCount: groceryCategories.length,
+            shrinkWrap: true,
+            separatorBuilder: (context, index) => const Gap(10),
+            itemBuilder: (context, index) {
+              final category = groceryCategories[index];
+              final subCategory = grocerySubCategories
+                  .where((element) => element.masterCode == category.code)
+                  .toList();
+              return Column(
+                spacing: 8,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LabelLargeText(
+                    text: category.title,
+                    fontWeight: FontWeight.w600,
                   ),
-                ),
-
-                Expanded(
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final state = ref.watch(categoriesViewmodelProvider);
-                      final status = state.subCategoriesStatus;
-                      final subCategories = state.subCategories;
-                      return switch (status) {
-                        Status.initial => const Center(
-                          child: LabelLargeText(
-                            text: "Select a category to view products",
-                            textAlign: TextAlign.center,
+                  GridView.builder(
+                    itemCount: subCategory.length,
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 80,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          mainAxisExtent: 110,
+                        ),
+                    itemBuilder: (context, index) {
+                      final subcategoryITem = subCategory[index];
+                      return InkWell(
+                        onTap: () {
+                          context.push(
+                            "/sub_category",
+                            extra: SubCatgeoryParameter(
+                              code: subcategoryITem.code,
+                              categoryName: subcategoryITem.subCategoryName,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHigh,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            spacing: 8,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadiusGeometry.circular(10),
+                                child: Image.network(
+                                  subcategoryITem.imageUrl,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              AutoSizeText(
+                                subcategoryITem.subCategoryName,
+                                minFontSize: 10,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.labelMedium!.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxFontSize: 11,
+                              ),
+                            ],
                           ),
                         ),
-                        Status.loading => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        Status.error => const Center(
-                          child: Text("Error loading subcategories"),
-                        ),
-                        Status.completed =>
-                          subCategories.isEmpty
-                              ? const Center(
-                                  child: Text("No subcategories found"),
-                                )
-                              : ListView.builder(
-                                  padding: const EdgeInsets.only(bottom: 60),
-                                  itemCount: subCategories.length,
-                                  itemBuilder: (context, index) {
-                                    final data = subCategories[index];
-                                    final products = viewmodel.getProducts(
-                                      data.code,
-                                    );
-                                    return Padding(
-                                      padding: const EdgeInsetsGeometry.only(
-                                        bottom: 10,
-                                      ),
-                                      child: Column(
-                                        spacing: 8,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          LabelLargeText(
-                                            text: data.subCategoryName,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                          SizedBox(
-                                            height: 260,
-                                            child: ListView.builder(
-                                              itemCount: products.length,
-                                              scrollDirection: Axis.horizontal,
-                                              itemBuilder: (context, index) {
-                                                final product = products[index];
-                                                return SizedBox(
-                                                  width: 150,
-                                                  child: ProductCard(
-                                                    code: product.code,
-                                                    imageUrl: product.imageUrl,
-                                                    name: product.subSkuName,
-                                                    desc: product.desc,
-                                                    uom: product.uom,
-                                                    isVariant:
-                                                        product.code ==
-                                                        product.variantCode,
-                                                    sellingPrice:
-                                                        Utils.formatIndianCurrency(
-                                                          product.sellingPrice,
-                                                        ),
-                                                    mrp:
-                                                        Utils.formatIndianCurrency(
-                                                          product.mrp,
-                                                        ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
-                      };
+                      );
                     },
                   ),
-                ),
-              ],
-            ),
+                ],
+              );
+            },
           ),
         ),
       ],

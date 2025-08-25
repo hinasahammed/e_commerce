@@ -1,7 +1,6 @@
 import 'package:e_commerce/data/response/status.dart';
 import 'package:e_commerce/res/components/text/label_large_text.dart';
 import 'package:e_commerce/res/components/widget/variant_item_card.dart';
-import 'package:e_commerce/res/utils/utils.dart';
 import 'package:e_commerce/viewmodel/product/product_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,17 +52,7 @@ class _VariantSheetState extends ConsumerState<VariantSheet> {
                   Status.completed => Column(
                     spacing: 8,
                     children: variantItems
-                        .map(
-                          (e) => VariantItemCard(
-                            imageUrl: e.imageUrl,
-                            subskuname: e.subSkuName,
-                            uom: e.uom,
-                            sellingPrice: Utils.formatIndianCurrency(
-                              e.sellingPrice,
-                            ),
-                            mrp: Utils.formatIndianCurrency(e.mrp),
-                          ),
-                        )
+                        .map((e) => VariantItemCard(product: e))
                         .toList(),
                   ),
                 };

@@ -7,6 +7,7 @@ import 'package:e_commerce/view/profile/widgets/preferences.dart';
 import 'package:e_commerce/view/profile/widgets/support_and_legal.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -25,7 +26,7 @@ class ProfileView extends StatelessWidget {
         ),
         SliverAppBar(
           backgroundColor: colorScheme.primary,
-          collapsedHeight: 80,
+          collapsedHeight: 90,
           flexibleSpace: FlexibleSpaceBar(
             background: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -78,24 +79,29 @@ class ProfileView extends StatelessWidget {
                 const OffersAndRewards(),
                 const Preferences(),
                 const SupportAndLegal(),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    spacing: 12,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.logout, color: colorScheme.error),
-                      LabelLargeText(
-                        text: "Logout",
-                        fontWeight: FontWeight.w600,
-                        textColor: colorScheme.error,
-                      ),
-                    ],
+                InkWell(
+                  onTap: () {
+                    context.go('/login');
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      spacing: 12,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.logout, color: colorScheme.error),
+                        LabelLargeText(
+                          text: "Logout",
+                          fontWeight: FontWeight.w600,
+                          textColor: colorScheme.error,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const Gap(60),

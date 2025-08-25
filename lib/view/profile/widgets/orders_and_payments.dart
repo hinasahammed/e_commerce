@@ -45,12 +45,22 @@ class OrdersAndPayments extends StatelessWidget {
             subTitle: "View order history",
           ),
           RowItem(
+            onTap: () {},
+            color: AppColors.pinkColor,
+            icon: FontAwesomeIcons.heart,
+            title: "Wishlist",
+            subTitle: "View your wishlist",
+          ),
+          RowItem(
             color: colorScheme.primary,
             icon: FontAwesomeIcons.wallet,
             title: "My Wallet",
             subTitle: "Manage payments",
           ),
-          const RowItem(
+          RowItem(
+            onTap: () {
+              context.push("/adress");
+            },
             color: AppColors.purpleColor,
             icon: FontAwesomeIcons.addressBook,
             title: "My Addresses",

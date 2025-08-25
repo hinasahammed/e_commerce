@@ -1,37 +1,30 @@
 import 'package:e_commerce/data/response/status.dart';
 import 'package:e_commerce/model/productsModel/products_model.dart';
-import 'package:e_commerce/model/subCategoriesModel/sub_categories_model.dart';
 import 'package:e_commerce/res/components/constants/data/products.dart';
-import 'package:e_commerce/res/components/constants/data/sub_categories.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'categories_viewmodel.g.dart';
 
 class CategoriesState {
-  final Status categoriesProductStatus;
-  final Status subCategoriesStatus;
-  final List<ProductsModel> products;
-  final List<SubCategoriesModel> subCategories;
-
   CategoriesState({
     this.categoriesProductStatus = Status.initial,
-    this.subCategoriesStatus = Status.initial,
     required this.products,
-    required this.subCategories,
+    this.selectedCategoryCode = 1,
   });
+  final Status categoriesProductStatus;
+  final List<ProductsModel> products;
+  final int selectedCategoryCode;
 
   CategoriesState copyWith({
     Status? categoriesProductStatus,
-    Status? subCategoriesStatus,
     List<ProductsModel>? products,
-    List<SubCategoriesModel>? subCategories,
+    int? selectedCategoryCode,
   }) {
     return CategoriesState(
       categoriesProductStatus:
           categoriesProductStatus ?? this.categoriesProductStatus,
-      subCategoriesStatus: subCategoriesStatus ?? this.subCategoriesStatus,
       products: products ?? this.products,
-      subCategories: subCategories ?? this.subCategories,
+      selectedCategoryCode: selectedCategoryCode ?? this.selectedCategoryCode,
     );
   }
 }
@@ -40,18 +33,16 @@ class CategoriesState {
 class CategoriesViewmodel extends _$CategoriesViewmodel {
   @override
   CategoriesState build() {
-    return CategoriesState(products: [], subCategories: []);
+    return CategoriesState(products: []);
   }
 
-  void fetchingsubCategories(Status status) {
-    state = state.copyWith(subCategoriesStatus: status);
-  }
-
-  void fetchingCategoryProduct(Status status) {
+  void fetchingProducts(Status status) {
     state = state.copyWith(categoriesProductStatus: status);
   }
 
-  List<ProductsModel> getProducts(int code) {
+  void fetchProducts(int code) {
+    fetchingProducts(Status.loading);
+    state = state.copyWith(products: []);
     final list = groceryProducts
         .where(
           (element) =>
@@ -59,17 +50,11 @@ class CategoriesViewmodel extends _$CategoriesViewmodel {
               (element.code == element.variantCode || element.variantCode == 0),
         )
         .toList();
-    return list;
+    state = state.copyWith(products: list);
+    fetchingProducts(Status.completed);
   }
 
-  void fetchSubcategories(int code) {
-    state = state.copyWith(subCategories: []);
-    fetchingsubCategories(Status.loading);
-    state = state.copyWith(
-      subCategories: grocerySubCategories
-          .where((element) => element.masterCode == code)
-          .toList(),
-    );
-    fetchingsubCategories(Status.completed);
+  void changeSelectedCategory(int code) {
+    state = state.copyWith(selectedCategoryCode: code);
   }
 }
